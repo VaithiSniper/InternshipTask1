@@ -1,4 +1,4 @@
-# Internship task-1
+# MongoDB-CRUD-for-nugde-creation
 - API setup for events CRUD.
 - Code has been documented.
 ## How to run
