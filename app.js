@@ -10,6 +10,7 @@ const app = express();
 const { v4: uuidv4 } = require('uuid');
 
 const mongodb = require('mongodb');
+const { resolveSoa } = require('dns');
 
 //server setup config
 app.use(express.json());
@@ -26,7 +27,7 @@ const uri = "mongodb://localhost:27017";
 const client = new mongodb.MongoClient(uri);
 
 //get event/s based on query parameters
-const getEvent = async (queryParameter) => {
+const getEvent = async (queryParameter, res) => {
 
         //setup collection object and bucket
         await client.connect();
@@ -47,7 +48,7 @@ const getEvent = async (queryParameter) => {
         id?bucket.openDownloadStreamByName(data.files.originalname).pipe(fs.createWriteStream(`./outputFile.${data.files.mimetype.split('/')[1]}`)):null;
         //return data
         data.files=data.files.originalname;
-        return (data);
+        return(data);
 
 }
 //post event to database
@@ -123,8 +124,8 @@ app.route(`/api/v3/app/events`)
             page: parseInt(page),
             limit: parseInt(limit)
         };
-        getEvent(queryParameter).then((res) => {
-            console.log({files : res.files.originalname, ...res});
+        getEvent(queryParameter).then((response) => {
+            res.json(({files : response.files.originalname, ...response}));
         })
     })
     .post(upload.any(), ({body, files}, res) => {
